@@ -1,4 +1,27 @@
+<div class="file__upload__container">
+  <!-- <mat-icon> publish</mat-icon> -->
+  <input type="file" accept=".json" (change)="onFileUpload($event)" />
+</div>
+
+<mat-chip-listbox
+  *ngIf="fileName"
+  class="chips__container"
+  aria-label="Fish selection"
+>
+  <mat-chip-option (removed)="removeFile()"
+    >{{ fileName
+    }}<button matChipRemove>
+      <mat-icon>cancel</mat-icon>
+    </button></mat-chip-option
+  >
+</mat-chip-listbox>
+
+<div *ngIf="isLoading" class="spinner__container">
+  <mat-spinner></mat-spinner>
+</div>
+
 <mat-tree
+  *ngIf="!isLoading && nestedDataSource.data.length"
   [dataSource]="nestedDataSource"
   [treeControl]="nestedTreeControl"
   class="example-tree"
@@ -6,7 +29,14 @@
   <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle>
     <li class="mat-tree-node">
       <span>{{ node.root }} :</span>
-      <input class="mat-tree-node-input" [(ngModel)]="node.value" placeholder="Enter value" />
+      <textarea
+      class="textarea__container"
+      [(ngModel)]="node.value"
+      (ngModelChange)="onValueChange(node)"
+      cdkTextareaAutosize
+      #autosize="cdkTextareaAutosize"
+      cdkAutosizeMinRows="2">
+    </textarea>
     </li>
   </mat-tree-node>
 
@@ -34,3 +64,9 @@
     </li>
   </mat-nested-tree-node>
 </mat-tree>
+
+<div *ngIf="nestedDataSource.data.length"  class="download___button">
+  <button [disabled]="nestedDataSource.data.length && !isDataSaved"  mat-raised-button color="primary" (click)="onDownload()">
+    <mat-icon>get_app</mat-icon> Download
+  </button>
+</div>

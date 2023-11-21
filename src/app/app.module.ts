@@ -1,21 +1,21 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppComponent } from './app.component';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { TranslateJsonTreeComponent } from './translate-json-tree/translate-json-tree.component';
+
+import { TranslatePageComponent } from './translate-page/translate-page.component';
 
 
 @NgModule({
-  declarations: [	
-    AppComponent,
-   ],
+  declarations: [AppComponent],
   imports: [
-  BrowserModule,
-    NoopAnimationsModule,
-    TranslateJsonTreeComponent
+    BrowserModule,
+    BrowserAnimationsModule,
+
+    TranslatePageComponent
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

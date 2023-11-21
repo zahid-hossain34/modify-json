@@ -1,3 +1,11 @@
+
+mat-tree{
+  margin-top: 10px;
+  background-color: #f1feff;
+  border-radius: 5px;
+  padding: 5px;
+}
+
 .example-tree-invisible {
   display: none;
 }
@@ -18,3 +26,60 @@
   border-radius: 5px;
   border: 1px solid #ccc;
 }
+input[type=file]::file-selector-button {
+  margin-right: 20px;
+  border: none;
+  background: #673ab7;
+  padding: 10px 20px;
+  border-radius: 10px;
+  color: #fff;
+  cursor: pointer;
+  transition: background .2s ease-in-out;
+}
+
+input[type=file]::file-selector-button:hover {
+  background: #673ab7;
+}
+.file__upload__container{
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 80px;
+  justify-content: center;
+  border: 2px dashed #ccc;
+  margin-top: 30px;
+  border-radius: 10px;
+  background: #f4f3f3;
+  cursor: pointer;
+}
+.file__upload__container:hover{
+  background: #ececec;
+}
+
+
+.chips__container{
+  margin-top: 30px;
+  padding: 5px;
+  width: 300px;
+}
+.spinner__container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.download___button{
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.textarea__container{
+  margin-left: 5px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+
+
