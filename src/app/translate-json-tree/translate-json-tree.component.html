@@ -1,5 +1,4 @@
 <div class="file__upload__container">
-  <!-- <mat-icon> publish</mat-icon> -->
   <input type="file" accept=".json" (change)="onFileUpload($event)" />
 </div>
 
@@ -32,7 +31,6 @@
       <textarea
       class="textarea__container"
       [(ngModel)]="node.value"
-      (ngModelChange)="onValueChange(node)"
       cdkTextareaAutosize
       #autosize="cdkTextareaAutosize"
       cdkAutosizeMinRows="2">
@@ -65,8 +63,8 @@
   </mat-nested-tree-node>
 </mat-tree>
 
-<div *ngIf="nestedDataSource.data.length"  class="download___button">
-  <button [disabled]="nestedDataSource.data.length && !isDataSaved"  mat-raised-button color="primary" (click)="onDownload()">
+<div *ngIf="nestedDataSource.data.length && !isLoading "  class="download___button">
+  <button   mat-raised-button color="primary" (click)="onDownload()">
     <mat-icon>get_app</mat-icon> Download
   </button>
 </div>

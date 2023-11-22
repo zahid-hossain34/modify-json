@@ -16,13 +16,13 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 })
 
 export class HeaderComponent implements OnInit {
-  @Output() saveTranslateData = new EventEmitter<boolean>(false);
+  // @Output() saveTranslateData = new EventEmitter<boolean>(false);
   constructor() { }
 
   ngOnInit() {
   }
   onSaveData(){
-    this.saveTranslateData.emit(true);
+    // this.saveTranslateData.emit(true);
     
   }
 

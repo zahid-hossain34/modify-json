@@ -1,20 +1,25 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
+import { BehaviorSubject } from 'rxjs';
+
 import {
   FileNode,
+  IUploadFileDetails,
   TranslateJsonTreeService,
 } from './translate-json-tree.service';
+
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { TextFieldModule } from '@angular/cdk/text-field';
+
 import { MatTreeNestedDataSource, MatTreeModule } from '@angular/material/tree';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { NestedTreeControl } from '@angular/cdk/tree';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import {TextFieldModule} from '@angular/cdk/text-field';
 
 @Component({
   selector: 'app-translate-json-tree',
@@ -36,89 +41,100 @@ import {TextFieldModule} from '@angular/cdk/text-field';
     MatProgressSpinnerModule,
   ],
 })
-export class TranslateJsonTreeComponent implements OnChanges , OnInit {
-  @Input() isDataSaved: boolean = false ;
+export class TranslateJsonTreeComponent implements OnInit {
   nestedTreeControl!: NestedTreeControl<FileNode>;
   nestedDataSource!: MatTreeNestedDataSource<FileNode>;
   fileName: string = '';
   fileInput: any;
   selectedFile: File | null = null;
   isLoading: boolean = false;
-  updateJsonData: any;
 
-  constructor(private translateJsonTreeService: TranslateJsonTreeService) {
-    
-  }
-  ngOnChanges(changes: SimpleChanges): void {
-    this.isDataSaved = changes['isDataSaved'].currentValue;
-  }
+  constructor(private translateJsonTreeService: TranslateJsonTreeService) {}
+
+  existingFileDetails = new BehaviorSubject<IUploadFileDetails>({});
 
   ngOnInit() {
     this.nestedTreeControl = new NestedTreeControl<FileNode>(this._getChildren);
     this.nestedDataSource = new MatTreeNestedDataSource();
     this.getDataSource();
-    
   }
+
+  /**
+   *
+   * @param _  is the index of the node
+   * @param nodeData  is the FileNode object
+   * @returns  true if the node has children otherwise false
+   */
 
   hasNestedChild = (_: number, nodeData: FileNode) => !nodeData.value;
 
+  /**
+   *
+   * @param node  is the FileNode object
+   * @returns  the array of FileNode objects
+   */
+
   private _getChildren = (node: FileNode) => node.children;
 
+  /** 
+  @returns  the array of FileNode array objects
+  */
   getDataSource() {
     this.translateJsonTreeService.dataChange.subscribe((data: any) => {
       if (!data) return;
       this.nestedDataSource.data = data;
     });
   }
-  
-  onValueChange(node: FileNode) {
-    console.log('node',node);
-    const updateValueKey = node.root 
-    const updateValue = node.value;
-    this.updateValueForKey(this.updateJsonData, updateValueKey, updateValue);
-    // node.value = event.target.value;
-    console.log('this.updateJsonData',this.updateJsonData);
-    
-  }
-  updateValueForKey(data:any, updateValueKey:any, updateValue:any){
-    console.log('data',data);
-    if(data && data.hasOwnProperty(updateValueKey)){
-      data[updateValueKey].value = updateValue;
-      console.log('data[updateValueKey].value',data[updateValueKey].value);
-      console.log('data[updateValueKey].value',data);
-      
-      return data;
-    }
-    if (data && typeof data['updateValueKey'] === 'object') {
-      console.log('data.children');
-      
-      for (const childKey in data.children) {
-        if (data.children.hasOwnProperty(childKey)) {
-          const child = data.children[childKey];
-          if (this.updateValueForKey(child, updateValueKey, updateValue)) {
-            return data; // Key found and updated in a child
-          }
-        }
-      }
-    }
-    return data; // Key not found
-  }
 
+  /**
+   *  @returns  clear the file input
+   * and file name
+   * and set the data source to
+   * empty array on remove file
+   */
   removeFile() {
     this.fileInput.value = '';
     this.fileName = '';
     this.nestedDataSource.data = [];
   }
 
+  /**
+   *
+   * @param event is the event object of the file upload
+   * @returns  the file name and file input and selected file and
+   * read the file and set the data source to updated data source array and
+   * set the loading to false on file upload
+   *
+   */
+
   onFileUpload(event: any) {
-    this.fileInput = event.target;
-    this.fileName = this.fileInput.files?.[0]?.name || '';
-    this.selectedFile = event.target.files[0];
-    if (this.selectedFile) {
-      this.isLoading = true;
-      this.readFile();
+    if (!event.target.files?.length) {
+      this.existingFileDetails.subscribe((data: any) => {
+        this.fileName = data.fileName;
+        this.fileInput = data.fileInput;
+        this.selectedFile = data.selectedFile;
+      });
+    } else {
+      this.fileInput = event.target;
+      this.fileName = this.fileInput.files?.[0]?.name || '';
+      this.selectedFile = event.target.files[0];
+      this.existingFileDetails.next({
+        fileName: this.fileName,
+        fileInput: this.fileInput,
+        selectedFile: this.selectedFile as File,
+      });
+      if (this.selectedFile) {
+        this.isLoading = true;
+        this.readFile();
+      }
     }
   }
+
+  /**
+   *  @returns  the updated data source array
+   * and set the data change to updated data source array
+   * and set the loading to false
+  */
 
   readFile(): void {
     const fileReader = new FileReader();
@@ -126,14 +142,9 @@ export class TranslateJsonTreeComponent implements OnChanges , OnInit {
     fileReader.onload = (e: any) => {
       try {
         const jsonData = JSON.parse(e.target.result);
-        console.log('this.jsonData',jsonData);
-        this.updateJsonData = jsonData;
-        console.log('this.updateJsonData',this.updateJsonData);
-        
-        
+
         const data = this.translateJsonTreeService.buildFileTree(jsonData, 0);
-       console.log('data',data);
-       
+
         this.translateJsonTreeService.dataChange.next(data);
       } catch (error) {
         alert('Error parsing JSON file.');
@@ -144,16 +155,37 @@ export class TranslateJsonTreeComponent implements OnChanges , OnInit {
 
     fileReader.readAsText(this.selectedFile as File);
   }
+
+  /**
+   *
+   * @returns  the updated data source array as JSON
+  */
+
+  getUpdateJSONData() {
+    return this.translateJsonTreeService.arrayToJSON(
+      this.nestedDataSource.data
+    );
+  }
+
+  /**
+   *
+   * @returns  the updated data source array as JSON
+   * and create a blob and create a url and create a link element and click it to trigger the download
+   * and revoke the object URL to free up resources
+  */
+
   onDownload(): void {
-    console.log(this.nestedDataSource.data);
-    
-    const blob = new Blob([JSON.stringify(this.nestedDataSource.data)], { type: 'application/json' });
+    const updatedJSONData = this.getUpdateJSONData();
+
+    const blob = new Blob([JSON.stringify(updatedJSONData)], {
+      type: 'application/json',
+    });
     const url = window.URL.createObjectURL(blob);
 
     // Create a link element and click it to trigger the download
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'updated_data.json';
+    a.download = `updated_${this.fileName}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

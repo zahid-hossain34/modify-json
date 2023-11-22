@@ -13,15 +13,10 @@ import { TranslateJsonTreeComponent } from '../translate-json-tree/translate-jso
   ]
 })
 export class TranslatePageComponent implements OnInit {
-  isSaved: boolean = false;
   constructor() { }
 
   ngOnInit() {
   }
-  onSave(event:boolean){
-    
-    this.isSaved = event;
-    console.log('event', this.isSaved);
-  }
+
 
 }
