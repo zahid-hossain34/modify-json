@@ -27,7 +27,7 @@
 >
   <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle>
     <li class="mat-tree-node">
-      <span>{{ node.root }} :</span>
+      <span>{{ node.root | textFormation }} :</span>
       <textarea
       class="textarea__container"
       [(ngModel)]="node.value"
@@ -54,7 +54,7 @@
             }}
           </mat-icon>
         </button>
-        {{ node.root }}
+        {{ node.root | textFormation }}
       </div>
       <ul [class.example-tree-invisible]="!nestedTreeControl.isExpanded(node)">
         <ng-container matTreeNodeOutlet></ng-container>

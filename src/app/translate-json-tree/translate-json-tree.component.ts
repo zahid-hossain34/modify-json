@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Pipe } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -20,6 +20,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { NestedTreeControl } from '@angular/cdk/tree';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { TextFormationPipe } from '../@application/pipes/textFormation.pipe';
 
 @Component({
   selector: 'app-translate-json-tree',
@@ -39,7 +40,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatButtonModule,
     MatChipsModule,
     MatProgressSpinnerModule,
+    TextFormationPipe
   ],
+  providers: [],
 })
 export class TranslateJsonTreeComponent implements OnInit {
   nestedTreeControl!: NestedTreeControl<FileNode>;
@@ -142,7 +145,7 @@ export class TranslateJsonTreeComponent implements OnInit {
     fileReader.onload = (e: any) => {
       try {
         const jsonData = JSON.parse(e.target.result);
-
+        
         const data = this.translateJsonTreeService.buildFileTree(jsonData, 0);
 
         this.translateJsonTreeService.dataChange.next(data);
@@ -176,7 +179,7 @@ export class TranslateJsonTreeComponent implements OnInit {
 
   onDownload(): void {
     const updatedJSONData = this.getUpdateJSONData();
-
+    
     const blob = new Blob([JSON.stringify(updatedJSONData)], {
       type: 'application/json',
     });
