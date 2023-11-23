@@ -185,7 +185,7 @@ export class TranslateJsonTreeComponent implements OnInit {
     // Create a link element and click it to trigger the download
     const a = document.createElement('a');
     a.href = url;
-    a.download = `updated_${this.fileName}.json`;
+    a.download = `updated_${this.fileName}`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
