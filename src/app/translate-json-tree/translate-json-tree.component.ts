@@ -21,6 +21,9 @@ import { NestedTreeControl } from '@angular/cdk/tree';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TextFormationPipe } from '../@application/pipes/textFormation.pipe';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import { ExtentionRemoverPipe } from '../@application/pipes/extentionRemover.pipe';
 
 @Component({
   selector: 'app-translate-json-tree',
@@ -33,6 +36,8 @@ import { TextFormationPipe } from '../@application/pipes/textFormation.pipe';
     BrowserModule,
     BrowserAnimationsModule,
     TextFieldModule,
+    TextFormationPipe,
+    ExtentionRemoverPipe,
 
     MatTreeModule,
     MatButtonModule,
@@ -40,7 +45,8 @@ import { TextFormationPipe } from '../@application/pipes/textFormation.pipe';
     MatButtonModule,
     MatChipsModule,
     MatProgressSpinnerModule,
-    TextFormationPipe
+    MatFormFieldModule,
+    MatInputModule
   ],
   providers: [],
 })
