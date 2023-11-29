@@ -22,7 +22,8 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TextFormationPipe } from '../@application/pipes/textFormation.pipe';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
+import { MatInputModule } from '@angular/material/input';
+
 import { ExtentionRemoverPipe } from '../@application/pipes/extentionRemover.pipe';
 
 @Component({
@@ -46,7 +47,7 @@ import { ExtentionRemoverPipe } from '../@application/pipes/extentionRemover.pip
     MatChipsModule,
     MatProgressSpinnerModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
   ],
   providers: [],
 })
@@ -57,6 +58,7 @@ export class TranslateJsonTreeComponent implements OnInit {
   fileInput: any;
   selectedFile: File | null = null;
   isLoading: boolean = false;
+  fileLists:  File[] = [];
 
   constructor(private translateJsonTreeService: TranslateJsonTreeService) {}
 
@@ -95,16 +97,23 @@ export class TranslateJsonTreeComponent implements OnInit {
     });
   }
 
+
+
   /**
    *  @returns  clear the file input
    * and file name
    * and set the data source to
    * empty array on remove file
    */
-  removeFile() {
-    this.fileInput.value = '';
-    this.fileName = '';
-    this.nestedDataSource.data = [];
+  removeFile(fileNameToRemove: string | any) {
+    this.fileLists = this.fileLists.filter(
+      (file: any) => file.name !== fileNameToRemove
+    );
+
+    if (this.fileLists.length === 0) {
+      this.nestedDataSource.data = [];
+      this.fileInput.value = '';
+    }
   }
 
   /**
@@ -117,6 +126,9 @@ export class TranslateJsonTreeComponent implements OnInit {
    */
 
   onFileUpload(event: any) {
+
+    this.fileLists = [...event.target.files];
+
     if (!event.target.files?.length) {
       this.existingFileDetails.subscribe((data: any) => {
         this.fileName = data.fileName;
@@ -124,9 +136,10 @@ export class TranslateJsonTreeComponent implements OnInit {
         this.selectedFile = data.selectedFile;
       });
     } else {
+
       this.fileInput = event.target;
       this.fileName = this.fileInput.files?.[0]?.name || '';
-      this.selectedFile = event.target.files[0];
+      this.selectedFile = this.fileLists[0];
       this.existingFileDetails.next({
         fileName: this.fileName,
         fileInput: this.fileInput,
@@ -143,7 +156,7 @@ export class TranslateJsonTreeComponent implements OnInit {
    *  @returns  the updated data source array
    * and set the data change to updated data source array
    * and set the loading to false
-  */
+   */
 
   readFile(): void {
     const fileReader = new FileReader();
@@ -151,7 +164,7 @@ export class TranslateJsonTreeComponent implements OnInit {
     fileReader.onload = (e: any) => {
       try {
         const jsonData = JSON.parse(e.target.result);
-        
+
         const data = this.translateJsonTreeService.buildFileTree(jsonData, 0);
 
         this.translateJsonTreeService.dataChange.next(data);
@@ -168,7 +181,7 @@ export class TranslateJsonTreeComponent implements OnInit {
   /**
    *
    * @returns  the updated data source array as JSON
-  */
+   */
 
   getUpdateJSONData() {
     return this.translateJsonTreeService.arrayToJSON(
@@ -181,11 +194,11 @@ export class TranslateJsonTreeComponent implements OnInit {
    * @returns  the updated data source array as JSON
    * and create a blob and create a url and create a link element and click it to trigger the download
    * and revoke the object URL to free up resources
-  */
+   */
 
   onDownload(): void {
     const updatedJSONData = this.getUpdateJSONData();
-    
+
     const blob = new Blob([JSON.stringify(updatedJSONData)], {
       type: 'application/json',
     });

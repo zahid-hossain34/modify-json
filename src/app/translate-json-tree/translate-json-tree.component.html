@@ -1,18 +1,12 @@
 <div class="file__upload__container">
-  <input type="file" accept=".json" (change)="onFileUpload($event)" />
+  <input type="file" accept=".json" (change)="onFileUpload($event)" multiple />
 </div>
 
-<mat-chip-listbox
-  *ngIf="fileName"
-  class="chips__container"
-  aria-label="Fish selection"
->
-  <mat-chip-option (removed)="removeFile()"
-    >{{ fileName
-    }}<button matChipRemove>
-      <mat-icon>cancel</mat-icon>
-    </button></mat-chip-option
-  >
+<mat-chip-listbox *ngIf="fileLists.length" class="chips__container">
+  <mat-chip *ngFor="let file of fileLists" (removed)="removeFile(file?.name)">
+    {{ file?.name }}
+    <mat-icon matChipRemove >cancel</mat-icon>
+  </mat-chip>
 </mat-chip-listbox>
 
 <div *ngIf="isLoading" class="spinner__container">
