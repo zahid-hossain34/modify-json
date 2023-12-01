@@ -85,4 +85,82 @@ export class TranslateJsonTreeService {
 
     return result;
   }
+
+  //  mergeMultipleJson(jsonArray: any[]): any {
+  //   console.log(jsonArray);
+    
+  //   // if (jsonArray.length < 2) {
+  //   //   return jsonArray[0] || {};
+  //   // }
+
+  //   const mergedJson = { ...jsonArray[0] };
+
+  //   for (let i = 1; i < jsonArray.length; i++) {
+  //     const currentJson = jsonArray[i];
+
+  //     for (const key in currentJson) {
+  //       if (currentJson.hasOwnProperty(key)) {
+  //         if (mergedJson.hasOwnProperty(key)) {
+  //           if (typeof mergedJson[key] === 'object' && typeof currentJson[key] === 'object') {
+  //             mergedJson[key] = this.mergeJson(mergedJson[key], currentJson[key]);
+  //           } else {
+  //             // If the key exists and is not an object, do not overwrite
+  //           }
+  //         } else {
+  //           // If the key doesn't exist, add it to the mergedJson
+  //           mergedJson[key] = currentJson[key];
+  //         }
+  //       }
+  //     }
+  //   }
+
+  //   return mergedJson;
+  // }
+  //  mergeJson(json1: any, json2: any): any {
+  //   const mergedJson = { ...json1 };
+
+  //   for (const key in json2) {
+  //     if (json2.hasOwnProperty(key)) {
+  //       if (mergedJson.hasOwnProperty(key)) {
+  //         if (typeof mergedJson[key] === 'object' && typeof json2[key] === 'object') {
+  //           mergedJson[key] = this.mergeJson(mergedJson[key], json2[key]);
+  //         } else {
+  //           // If the key exists and is not an object, do not overwrite
+  //         }
+  //       } else {
+  //         // If the key doesn't exist, add it to the mergedJson
+  //         mergedJson[key] = json2[key];
+  //       }
+  //     }
+  //   }
+
+  //   return mergedJson;
+  // }
+  //  arrayToObject(array: any[]): any {
+  //   console.log(array);
+    
+  //   return array.reduce((acc, item) => {
+  //     const key = Object.keys(item)[0];
+  //     acc[key] = item[key];
+  //     return acc;
+  //   }, {});
+  // }
+  //  readJSONFile(file: File): Promise<any> {
+  //   return new Promise((resolve, reject) => {
+  //     const reader = new FileReader();
+
+  //     reader.onload = (event: any) => {
+  //       try {
+  //         const json = JSON.parse(event.target.result);
+  //         resolve(json);
+  //       } catch (error) {
+  //         reject(error);
+  //       }
+  //     };
+
+  //     reader.readAsText(file);
+  //   });
+  // }
+
+
 }

@@ -25,6 +25,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
 import { ExtentionRemoverPipe } from '../@application/pipes/extentionRemover.pipe';
+import { JsonServiceService } from '../@application/services/jsonService.service';
 
 @Component({
   selector: 'app-translate-json-tree',
@@ -58,9 +59,16 @@ export class TranslateJsonTreeComponent implements OnInit {
   fileInput: any;
   selectedFile: File | null = null;
   isLoading: boolean = false;
-  fileLists:  File[] = [];
+  fileLists: File[] = [];
+  jsonData: any = {};
+  node: any;
+  jsonFIleIndex!: number;
+  selectedJsonFiles!: any;
 
-  constructor(private translateJsonTreeService: TranslateJsonTreeService) {}
+  constructor(
+    private translateJsonTreeService: TranslateJsonTreeService,
+    private jsonSerive: JsonServiceService
+  ) {}
 
   existingFileDetails = new BehaviorSubject<IUploadFileDetails>({});
 
@@ -68,6 +76,14 @@ export class TranslateJsonTreeComponent implements OnInit {
     this.nestedTreeControl = new NestedTreeControl<FileNode>(this._getChildren);
     this.nestedDataSource = new MatTreeNestedDataSource();
     this.getDataSource();
+    this.getJsonFiles();
+
+  }
+  getJsonFiles() {
+    this.jsonSerive.jsonFileList.subscribe((data: any) => {
+      console.log('',data);
+      this.selectedJsonFiles = data;
+    });
   }
 
   /**
@@ -94,10 +110,9 @@ export class TranslateJsonTreeComponent implements OnInit {
     this.translateJsonTreeService.dataChange.subscribe((data: any) => {
       if (!data) return;
       this.nestedDataSource.data = data;
+      console.log(data);
     });
   }
-
-
 
   /**
    *  @returns  clear the file input
@@ -105,7 +120,8 @@ export class TranslateJsonTreeComponent implements OnInit {
    * and set the data source to
    * empty array on remove file
    */
-  removeFile(fileNameToRemove: string | any) {
+  removeFile(fileNameToRemove: string | any, index: number) {
+    this.selectedJsonFiles.splice(index, 1);
     this.fileLists = this.fileLists.filter(
       (file: any) => file.name !== fileNameToRemove
     );
@@ -126,57 +142,26 @@ export class TranslateJsonTreeComponent implements OnInit {
    */
 
   onFileUpload(event: any) {
-
     this.fileLists = [...event.target.files];
+    this.fileInput = event.target;
+    this.fileName = this.fileInput.files?.[0]?.name || '';
 
-    if (!event.target.files?.length) {
-      this.existingFileDetails.subscribe((data: any) => {
-        this.fileName = data.fileName;
-        this.fileInput = data.fileInput;
-        this.selectedFile = data.selectedFile;
-      });
-    } else {
+    this.isLoading = true;
+    this.jsonSerive.mergeUploadedFiles(event.target.files).then((data) => {
+      this.jsonData = data;
+      console.log(this.jsonData);
+      
+      const datatest = this.translateJsonTreeService.buildFileTree(
+        this.jsonData,
+        0
+      );
+      this.isLoading = false;
+      this.translateJsonTreeService.dataChange.next(datatest);
+    });
 
-      this.fileInput = event.target;
-      this.fileName = this.fileInput.files?.[0]?.name || '';
-      this.selectedFile = this.fileLists[0];
-      this.existingFileDetails.next({
-        fileName: this.fileName,
-        fileInput: this.fileInput,
-        selectedFile: this.selectedFile as File,
-      });
-      if (this.selectedFile) {
-        this.isLoading = true;
-        this.readFile();
-      }
-    }
   }
 
-  /**
-   *  @returns  the updated data source array
-   * and set the data change to updated data source array
-   * and set the loading to false
-   */
 
-  readFile(): void {
-    const fileReader = new FileReader();
-
-    fileReader.onload = (e: any) => {
-      try {
-        const jsonData = JSON.parse(e.target.result);
-
-        const data = this.translateJsonTreeService.buildFileTree(jsonData, 0);
-
-        this.translateJsonTreeService.dataChange.next(data);
-      } catch (error) {
-        alert('Error parsing JSON file.');
-      } finally {
-        this.isLoading = false;
-      }
-    };
-
-    fileReader.readAsText(this.selectedFile as File);
-  }
 
   /**
    *
@@ -197,22 +182,33 @@ export class TranslateJsonTreeComponent implements OnInit {
    */
 
   onDownload(): void {
-    const updatedJSONData = this.getUpdateJSONData();
-
-    const blob = new Blob([JSON.stringify(updatedJSONData)], {
-      type: 'application/json',
+ 
+    this.selectedJsonFiles.forEach((jsonObject:any, index:number) => {
+      const fileName = `new_${this.fileLists[index].name}`;
+      this.jsonSerive.downloadJson(jsonObject, fileName);
     });
-    const url = window.URL.createObjectURL(blob);
-
-    // Create a link element and click it to trigger the download
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `updated_${this.fileName}`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-
-    // Revoke the object URL to free up resources
-    window.URL.revokeObjectURL(url);
   }
+
+  onValueChange(event: any, node: any, index: number) {
+    console.log(index);
+    console.log(node);
+    
+
+    this.node = node;
+    this.jsonFIleIndex = index;
+
+    console.log(this.selectedJsonFiles);
+    const test  = this.jsonSerive.updateNestedObject(this.selectedJsonFiles[index], node.root, event.target.value);
+      console.log(test);
+     
+  }
+  getValue() {
+    // const test  = this.jsonSerive.getAllValues(this.selectedJsonFiles[index]);
+    // console.log(test);
+    return 'test';
+
+    
+    
+  }
+
 }

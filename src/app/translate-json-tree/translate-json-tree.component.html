@@ -2,8 +2,8 @@
   <input type="file" accept=".json" (change)="onFileUpload($event)" multiple />
 </div>
 
-<mat-chip-listbox *ngIf="fileLists.length" class="chips__container">
-  <mat-chip *ngFor="let file of fileLists" (removed)="removeFile(file?.name)">
+<mat-chip-listbox *ngIf="fileLists.length " class="chips__container">
+  <mat-chip *ngFor="let file of fileLists ; let index = index" (removed)="removeFile(file?.name,index)">
     {{ file?.name }}
     <mat-icon matChipRemove >cancel</mat-icon>
   </mat-chip>
@@ -23,15 +23,16 @@
     <li class="mat-tree-node">
       <span>{{ node.root | textFormation }} : </span>
  
-    <mat-form-field  >
-      <mat-label >{{this.fileName | extentionRemover :'.json'}}</mat-label>
+    <mat-form-field *ngFor="let file of fileLists; let i = index" >
+      <mat-label >{{file.name | extentionRemover :'.json'}}</mat-label>
       <textarea
       class="textarea__container"
         matInput
-        [(ngModel)]="node.value"
         cdkTextareaAutosize
         #autosize="cdkTextareaAutosize"
+        [ngModel]="getValue()"
         cdkAutosizeMinRows="1"
+        (keyup)="onValueChange($event, node, i)"
       ></textarea>
     </mat-form-field>
     </li>
