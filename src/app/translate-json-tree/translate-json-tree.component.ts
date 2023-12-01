@@ -59,7 +59,7 @@ export class TranslateJsonTreeComponent implements OnInit {
   fileInput: any;
   selectedFile: File | null = null;
   isLoading: boolean = false;
-  fileLists: File[] = [];
+  fileLists: any[] = [];
   jsonData: any = {};
   node: any;
   jsonFIleIndex!: number;
@@ -143,6 +143,8 @@ export class TranslateJsonTreeComponent implements OnInit {
 
   onFileUpload(event: any) {
     this.fileLists = [...event.target.files];
+    console.log(this.fileLists);
+    
     this.fileInput = event.target;
     this.fileName = this.fileInput.files?.[0]?.name || '';
 
@@ -210,5 +212,6 @@ export class TranslateJsonTreeComponent implements OnInit {
     
     
   }
+
 
 }

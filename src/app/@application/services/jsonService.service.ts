@@ -41,7 +41,7 @@ export class JsonServiceService {
       const mergedObject = this.mergeMultipleJson(jsonObjects);
       return mergedObject;
     }
-  
+
     private mergeMultipleJson(jsonArray: any[]): any {
       if (jsonArray.length < 2) {
         return jsonArray[0] || {};
@@ -53,44 +53,73 @@ export class JsonServiceService {
         const currentJson = jsonArray[i];
   
         for (const key in currentJson) {
+          console.log('crntjsonkey',key);
+          
           if (currentJson.hasOwnProperty(key)) {
             if (mergedJson.hasOwnProperty(key)) {
               if (typeof mergedJson[key] === 'object' && typeof currentJson[key] === 'object') {
-                mergedJson[key] = this.mergeJson(mergedJson[key], currentJson[key]);
+                mergedJson[key] = this.deepMergeWithArrays(mergedJson[key], currentJson[key]);
               } else {
                 // If the key exists and is not an object, do not overwrite
+                
               }
             } else {
               // If the key doesn't exist, add it to the mergedJson
+              console.log('currentJson[key]',currentJson[key]);
+              
               mergedJson[key] = currentJson[key];
             }
           }
         }
       }
-  
+      console.log('mergedJsonaaaa',mergedJson);
+      
       return mergedJson;
     }
+    deepMergeWithArrays(...objects: any[]): any {
+      const merged: Record<string, any> = {};
   
-    private mergeJson(json1: any, json2: any): any {
-      const mergedJson = { ...json1 };
-  
-      for (const key in json2) {
-        if (json2.hasOwnProperty(key)) {
-          if (mergedJson.hasOwnProperty(key)) {
-            if (typeof mergedJson[key] === 'object' && typeof json2[key] === 'object') {
-              mergedJson[key] = this.mergeJson(mergedJson[key], json2[key]);
+      for (const obj of objects) {
+        for (const key in obj) {
+          if (obj.hasOwnProperty(key)) {
+            if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
+              // Recursively merge nested objects
+              merged[key] = this.deepMergeWithArrays(merged[key], obj[key]);
             } else {
-              // If the key exists and is not an object, do not overwrite
+              // Convert values to arrays and merge
+              merged[key] = (merged[key] || []).concat(obj[key]);
             }
-          } else {
-            // If the key doesn't exist, add it to the mergedJson
-            mergedJson[key] = json2[key];
           }
         }
       }
   
-      return mergedJson;
+      return merged;
     }
+  
+  
+    // private mergeJson(json1: any, json2: any): any {
+    //   const mergedJson = { ...json1 };
+  
+    //   for (const key in json2) {
+    //     if (json2.hasOwnProperty(key)) {
+    //       if (mergedJson.hasOwnProperty(key)) {
+    //         if (typeof mergedJson[key] === 'object' && typeof json2[key] === 'object') {
+    //           mergedJson[key] = this.mergeJson(mergedJson[key], json2[key]);
+    //         } else {
+    //           // If the key exists and is not an object, do not overwrite
+    //         }
+    //       } else {
+    //         // If the key doesn't exist, add it to the mergedJson
+    //         console.log('json2[key]',json2[key]);
+            
+    //         mergedJson[key] = json2[key];
+    //       }
+    //     }
+    //   }
+    //   console.log('mergedJsonnested',mergedJson);
+      
+    //   return mergedJson;
+    // }
    currentKeys:any = [];
     updateNestedObject(obj: any, targetKey: string, newValue: any, keys: string[] = []): string[] | undefined {
       console.log(newValue);
