@@ -46,30 +46,52 @@ export class JsonServiceService {
       if (jsonArray.length < 2) {
         return jsonArray[0] || {};
       }
+      console.log('jsonArray',jsonArray);
+      
   
       const mergedJson = { ...jsonArray[0] };
+      console.log('mergedJson',mergedJson);
+      
   
       for (let i = 1; i < jsonArray.length; i++) {
         const currentJson = jsonArray[i];
-  
+        console.log('currentJson',currentJson);
+        
         for (const key in currentJson) {
-          console.log('crntjsonkey',key);
+          console.log('key',key);
           
           if (currentJson.hasOwnProperty(key)) {
+
             if (mergedJson.hasOwnProperty(key)) {
               if (typeof mergedJson[key] === 'object' && typeof currentJson[key] === 'object') {
                 mergedJson[key] = this.deepMergeWithArrays(mergedJson[key], currentJson[key]);
               } else {
                 // If the key exists and is not an object, do not overwrite
                 
+                
               }
             } else {
               // If the key doesn't exist, add it to the mergedJson
               console.log('currentJson[key]',currentJson[key]);
+              // const jsonTest = []
+              const json  = this.deepMergeWithArrays(mergedJson[key], currentJson[key]) ;
+              console.log('json',json);
+              for(const key in json){
+                console.log('key',key);
+                console.log(i);
+                
+                console.log('updatedjson[key]',json[key].splice(i-1, 0 , ' '));
+                
+              }
               
-              mergedJson[key] = currentJson[key];
+              // jsonTest.push(json.map((item:any) => {
+              //   console.log('item',item);
+                
+              // }));
+
+              mergedJson[key] = json;
             }
-          }
+          } 
         }
       }
       console.log('mergedJsonaaaa',mergedJson);
@@ -78,18 +100,32 @@ export class JsonServiceService {
     }
     deepMergeWithArrays(...objects: any[]): any {
       const merged: Record<string, any> = {};
-  
+      console.log('objects',objects);
+      
       for (const obj of objects) {
+        console.log('nnnobj',obj);
+        
         for (const key in obj) {
+          console.log('nnnkey',key);
           if (obj.hasOwnProperty(key)) {
             if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
               // Recursively merge nested objects
               merged[key] = this.deepMergeWithArrays(merged[key], obj[key]);
             } else {
+              console.log('here');
+              
               // Convert values to arrays and merge
+              // if(!Array.isArray(obj[key]) && merged[key] === undefined ){
+              //   merged[key] = [obj[key]];
+              // } else{
+              // merged[key] = (merged[key] || []).concat(obj[key]);
+
+              // }
               merged[key] = (merged[key] || []).concat(obj[key]);
+
             }
           }
+  
         }
       }
   
