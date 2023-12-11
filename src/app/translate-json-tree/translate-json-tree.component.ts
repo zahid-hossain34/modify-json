@@ -190,7 +190,7 @@ export class TranslateJsonTreeComponent implements OnInit {
 
   onDownload(): void {
     this.jsonData.forEach((jsonObject: unknown, index: number) => {
-      const fileName = `deleteCheck${this.fileLists[index].name}`;
+      const fileName = `Updated_${this.fileLists[index].name}`;
       this.jsonSerive.downloadJson(jsonObject, fileName);
     });
   }
