@@ -34,7 +34,7 @@ import { ModifyDataService } from '../@application/services/modify-data.service'
   styleUrls: ['./translate-json-tree.component.css'],
   standalone: true,
   imports: [
-  CommonModule,
+    CommonModule,
     FormsModule,
     BrowserModule,
     BrowserAnimationsModule,
@@ -67,6 +67,7 @@ export class TranslateJsonTreeComponent implements OnInit {
   constructor(
     private translateJsonTreeService: TranslateJsonTreeService,
     private jsonSerive: JsonServiceService,
+    private modifyDataService: ModifyDataService
   ) {}
 
   existingFileDetails = new BehaviorSubject<IUploadFileDetails>({});
@@ -76,7 +77,6 @@ export class TranslateJsonTreeComponent implements OnInit {
     this.nestedDataSource = new MatTreeNestedDataSource();
     this.getDataSource();
     this.getJsonFiles();
-
   }
   getJsonFiles() {
     this.jsonSerive.jsonFileList.subscribe((data: any) => {
@@ -118,10 +118,28 @@ export class TranslateJsonTreeComponent implements OnInit {
    * empty array on remove file
    */
   removeFile(fileNameToRemove: string | any, index: number) {
+    this.isLoading = true;
     this.selectedJsonFiles.splice(index, 1);
     this.fileLists = this.fileLists.filter(
       (file: any) => file.name !== fileNameToRemove
     );
+    this.isLoading = true;
+    this.jsonSerive.jsonFileList.subscribe((data: any) => {
+      const uniqueObject = this.modifyDataService.createUniqueKeysObject(data);
+      const finalJson = this.modifyDataService.addMissingKeysToAllObjects(
+        data,
+        uniqueObject
+      );
+      this.jsonData = finalJson;
+      const finalMergedJson = this.jsonSerive.merge(finalJson);
+      const dataSourceData = this.translateJsonTreeService.buildFileTree(
+        finalMergedJson,
+        0
+      );
+      this.translateJsonTreeService.dataChange.next(dataSourceData);
+      this.isLoading = false;
+    });
+
     if (this.fileLists.length === 0) {
       this.nestedDataSource.data = [];
       this.fileInput.value = '';
@@ -143,7 +161,7 @@ export class TranslateJsonTreeComponent implements OnInit {
     this.isLoading = true;
     this.jsonSerive.mergeUploadedFiles(event.target.files).then((data) => {
       this.jsonData = data;
-      const finalJson  = this.jsonSerive.merge(this.jsonData)
+      const finalJson = this.jsonSerive.merge(this.jsonData);
       const dataSourceData = this.translateJsonTreeService.buildFileTree(
         finalJson,
         0
@@ -151,7 +169,6 @@ export class TranslateJsonTreeComponent implements OnInit {
       this.isLoading = false;
       this.translateJsonTreeService.dataChange.next(dataSourceData);
     });
-
   }
   /**
    *
@@ -172,18 +189,18 @@ export class TranslateJsonTreeComponent implements OnInit {
    */
 
   onDownload(): void {
- 
-    this.jsonData.forEach((jsonObject:unknown, index:number) => {
-      const fileName = `changed${this.fileLists[index].name}`;
+    this.jsonData.forEach((jsonObject: unknown, index: number) => {
+      const fileName = `deleteCheck${this.fileLists[index].name}`;
       this.jsonSerive.downloadJson(jsonObject, fileName);
     });
   }
 
   onValueChange(event: any, node: string, index: number) {
     this.jsonFIleIndex = index;
-    this.jsonSerive.updateNestedObject(this.jsonData[index], node, event.target.value);
+    this.jsonSerive.updateNestedObject(
+      this.jsonData[index],
+      node,
+      event.target.value
+    );
   }
-
-
-
 }

@@ -33,7 +33,8 @@ export class JsonServiceService {
       jsonObjects.push(jsonObject);
       this.jsonFileList.next(jsonObjects);
     }
-    const uniqueObject = this.modifyDataService.createUniqueKeysObject(jsonObjects);
+    const uniqueObject =
+      this.modifyDataService.createUniqueKeysObject(jsonObjects);
     const finalJson = this.modifyDataService.addMissingKeysToAllObjects(
       jsonObjects,
       uniqueObject
@@ -48,7 +49,6 @@ export class JsonServiceService {
     newValue: any,
     keys: string[] = []
   ): string[] | undefined {
-    console.log(newValue);
     this.currentKeys = [];
 
     for (const key in obj) {
