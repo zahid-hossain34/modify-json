@@ -20,19 +20,19 @@
   class="example-tree"
 >
   <mat-tree-node *matTreeNodeDef="let node; let indexNode = index" matTreeNodeToggle>
-    <li class="mat-tree-node" style="display: flex !important; justify-content: space-between; align-items: center;">
-      <!-- <span>{{ node.value | textFormation }} : </span> -->
+    <li>
+      <span>{{ node.root | textFormation }} : </span>
  
-    <mat-form-field  >
-      <!-- <mat-label >{{fileLists[node.root]?.name | extentionRemover :'.json'}}</mat-label> -->
+    <mat-form-field *ngFor="let file of fileLists ; let index  = index" >
+      <mat-label >{{file.name | extentionRemover :'.json'}}</mat-label>
       <textarea
       class="textarea__container"
         matInput
         cdkTextareaAutosize
         #autosize="cdkTextareaAutosize"
-        [ngModel]="node.value"
+        [ngModel]="node.value[index]"
         cdkAutosizeMinRows="1"
-        (keyup)="onValueChange($event, node, indexNode)"
+        (keyup)="onValueChange($event, node.root, index)"
       ></textarea>
     </mat-form-field>
     </li>

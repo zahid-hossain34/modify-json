@@ -1,214 +1,138 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { ModifyDataService } from './modify-data.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class JsonServiceService {
-
+  constructor(private modifyDataService: ModifyDataService) {}
   jsonFileList = new BehaviorSubject<any[]>([]);
 
-   readFile(file: File): Promise<any> {
-    console.log(file);
-    
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-  
-        reader.onload = (event: any) => {
-          try {
-            const json = JSON.parse(event.target.result);
-            
-            resolve(json);
-          } catch (error) {
-            reject(error);
-          }
-        };
-  
-        reader.readAsText(file);
-      });
-    }
-  
-    async mergeUploadedFiles(files: FileList): Promise<any> {
-      const jsonObjects = [];
-      
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const jsonObject = await this.readFile(file);
-        jsonObjects.push(jsonObject);
-        this.jsonFileList.next(jsonObjects);
-      }
-  
-      const mergedObject = this.mergeMultipleJson(jsonObjects);
-      return mergedObject;
-    }
-
-    private mergeMultipleJson(jsonArray: any[]): any {
-      if (jsonArray.length < 2) {
-        return jsonArray[0] || {};
-      }
-      console.log('jsonArray',jsonArray);
-      
-  
-      const mergedJson = { ...jsonArray[0] };
-      console.log('mergedJson',mergedJson);
-      
-  
-      for (let i = 1; i < jsonArray.length; i++) {
-        const currentJson = jsonArray[i];
-        console.log('currentJson',currentJson);
-        
-        for (const key in currentJson) {
-          console.log('key',key);
-          
-          if (currentJson.hasOwnProperty(key)) {
-
-            if (mergedJson.hasOwnProperty(key)) {
-              if (typeof mergedJson[key] === 'object' && typeof currentJson[key] === 'object') {
-                mergedJson[key] = this.deepMergeWithArrays(mergedJson[key], currentJson[key]);
-              } else {
-                // If the key exists and is not an object, do not overwrite
-                
-                
-              }
-            } else {
-              // If the key doesn't exist, add it to the mergedJson
-              console.log('currentJson[key]',currentJson[key]);
-              // const jsonTest = []
-              const json  = this.deepMergeWithArrays(mergedJson[key], currentJson[key]) ;
-              console.log('json',json);
-              for(const key in json){
-                console.log('key',key);
-                console.log(i);
-                
-                console.log('updatedjson[key]',json[key].splice(i-1, 0 , ' '));
-                
-              }
-              
-              // jsonTest.push(json.map((item:any) => {
-              //   console.log('item',item);
-                
-              // }));
-
-              mergedJson[key] = json;
-            }
-          } 
+  readFile(file: File): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (event: any) => {
+        try {
+          const json = JSON.parse(event.target.result);
+          resolve(json);
+        } catch (error) {
+          reject(error);
         }
-      }
-      console.log('mergedJsonaaaa',mergedJson);
-      
-      return mergedJson;
-    }
-    deepMergeWithArrays(...objects: any[]): any {
-      const merged: Record<string, any> = {};
-      console.log('objects',objects);
-      
-      for (const obj of objects) {
-        console.log('nnnobj',obj);
-        
-        for (const key in obj) {
-          console.log('nnnkey',key);
-          if (obj.hasOwnProperty(key)) {
-            if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
-              // Recursively merge nested objects
-              merged[key] = this.deepMergeWithArrays(merged[key], obj[key]);
-            } else {
-              console.log('here');
-              
-              // Convert values to arrays and merge
-              // if(!Array.isArray(obj[key]) && merged[key] === undefined ){
-              //   merged[key] = [obj[key]];
-              // } else{
-              // merged[key] = (merged[key] || []).concat(obj[key]);
+      };
 
-              // }
-              merged[key] = (merged[key] || []).concat(obj[key]);
+      reader.readAsText(file);
+    });
+  }
 
-            }
-          }
-  
-        }
-      }
-  
-      return merged;
+  async mergeUploadedFiles(files: FileList): Promise<any> {
+    const jsonObjects = [];
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const jsonObject = await this.readFile(file);
+      jsonObjects.push(jsonObject);
+      this.jsonFileList.next(jsonObjects);
     }
-  
-  
-    // private mergeJson(json1: any, json2: any): any {
-    //   const mergedJson = { ...json1 };
-  
-    //   for (const key in json2) {
-    //     if (json2.hasOwnProperty(key)) {
-    //       if (mergedJson.hasOwnProperty(key)) {
-    //         if (typeof mergedJson[key] === 'object' && typeof json2[key] === 'object') {
-    //           mergedJson[key] = this.mergeJson(mergedJson[key], json2[key]);
-    //         } else {
-    //           // If the key exists and is not an object, do not overwrite
-    //         }
-    //       } else {
-    //         // If the key doesn't exist, add it to the mergedJson
-    //         console.log('json2[key]',json2[key]);
-            
-    //         mergedJson[key] = json2[key];
-    //       }
-    //     }
-    //   }
-    //   console.log('mergedJsonnested',mergedJson);
-      
-    //   return mergedJson;
-    // }
-   currentKeys:any = [];
-    updateNestedObject(obj: any, targetKey: string, newValue: any, keys: string[] = []): string[] | undefined {
-      console.log(newValue);
-      this.currentKeys = [];
- 
-      for (const key in obj) {
-        this.currentKeys = [...keys];
-  
-        if (typeof obj[key] === 'object') {
-          const result = this.updateNestedObject(obj[key], targetKey, newValue, this.currentKeys.concat(key));
-  
-          if (result !== undefined) {
-            return result;
-          }
-        } else if (key === targetKey) {
-          obj[key] = newValue;
-          return this.currentKeys.concat(key);
-        }
-      }
-  
-      return undefined;
-    }
-    downloadJson(jsonObject: any, fileName: string): void {
-      const jsonString = JSON.stringify(jsonObject, null, 2);
-      const blob = new Blob([jsonString], { type: 'application/json' });
-      const link = document.createElement('a');
-  
-      link.href = window.URL.createObjectURL(blob);
-      link.download = fileName;
-  
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-    
-    private values: any[] = [];
+    const uniqueObject = this.modifyDataService.createUniqueKeysObject(jsonObjects);
+    const finalJson = this.modifyDataService.addMissingKeysToAllObjects(
+      jsonObjects,
+      uniqueObject
+    );
+    return finalJson;
+  }
 
-    getAllValues(obj: any): any[] {
-      this.values = [];
-      this.traverse(obj);
-      return this.values;
-    }
-  
-    private traverse(obj: any): void {
-      for (const key in obj) {
-        if (typeof obj[key] === 'object') {
-          // If the current property is an object, recursively call the function
-          this.traverse(obj[key]);
-        } else {
-          // If it's not an object, add its value to the array
-          this.values.push(obj[key]);
+  currentKeys: any = [];
+  updateNestedObject(
+    obj: any,
+    targetKey: string,
+    newValue: any,
+    keys: string[] = []
+  ): string[] | undefined {
+    console.log(newValue);
+    this.currentKeys = [];
+
+    for (const key in obj) {
+      this.currentKeys = [...keys];
+
+      if (typeof obj[key] === 'object') {
+        const result = this.updateNestedObject(
+          obj[key],
+          targetKey,
+          newValue,
+          this.currentKeys.concat(key)
+        );
+
+        if (result !== undefined) {
+          return result;
         }
+      } else if (key === targetKey) {
+        obj[key] = newValue;
+        return this.currentKeys.concat(key);
+      }
+    }
+
+    return undefined;
+  }
+  downloadJson(jsonObject: any, fileName: string): void {
+    const jsonString = JSON.stringify(jsonObject, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const link = document.createElement('a');
+
+    link.href = window.URL.createObjectURL(blob);
+    link.download = fileName;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  private values: any[] = [];
+
+  getAllValues(obj: any): any[] {
+    this.values = [];
+    this.traverse(obj);
+    return this.values;
+  }
+
+  private traverse(obj: any): void {
+    for (const key in obj) {
+      if (typeof obj[key] === 'object') {
+        // If the current property is an object, recursively call the function
+        this.traverse(obj[key]);
+      } else {
+        // If it's not an object, add its value to the array
+        this.values.push(obj[key]);
       }
     }
   }
-  
+
+  merge(data: any[]): any {
+    const mergedResult = {};
+    data.forEach((obj) => {
+      this.mergeNestedObject(mergedResult, obj);
+    });
+    return mergedResult;
+  }
+
+  private mergeNestedObject(target: any, source: any) {
+    Object.keys(source).forEach((key) => {
+      const sourceValue = source[key];
+
+      if (this.isObject(sourceValue)) {
+        target[key] = target[key] || {};
+        this.mergeNestedObject(target[key], sourceValue);
+      } else {
+        target[key] = target[key] || [];
+        this.addValueToUniqueArray(target[key], sourceValue);
+      }
+    });
+  }
+
+  private isObject(value: any): boolean {
+    return typeof value === 'object' && value !== null;
+  }
+
+  private addValueToUniqueArray(array: any[], value: any) {
+    array.push(value);
+  }
+}

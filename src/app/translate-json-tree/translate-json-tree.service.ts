@@ -45,7 +45,7 @@ export class TranslateJsonTreeService {
 
       if (value != null) {
         /** check if value is object */
-        if (typeof value === 'object') {
+        if (typeof value === 'object' && !Array.isArray(value)) {
           /** call buildFileTree recursively */
           node.children = this.buildFileTree(value, level + 1);
         } else {
