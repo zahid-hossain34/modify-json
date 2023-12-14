@@ -63,6 +63,7 @@ export class TranslateJsonTreeComponent implements OnInit {
   jsonData: any = {};
   jsonFIleIndex!: number;
   selectedJsonFiles!: any;
+  selectedFileName: string = '';
 
   constructor(
     private translateJsonTreeService: TranslateJsonTreeService,
@@ -118,6 +119,8 @@ export class TranslateJsonTreeComponent implements OnInit {
    * empty array on remove file
    */
   removeFile(fileNameToRemove: string | any, index: number) {
+    this.selectedFileName = '';
+
     this.isLoading = true;
     this.selectedJsonFiles.splice(index, 1);
     this.fileLists = this.fileLists.filter(
@@ -156,6 +159,7 @@ export class TranslateJsonTreeComponent implements OnInit {
    */
 
   onFileUpload(event: any) {
+    this.selectedFileName = '';
     this.fileLists = [...event.target.files];
     this.fileInput = event.target;
     this.isLoading = true;
@@ -196,11 +200,19 @@ export class TranslateJsonTreeComponent implements OnInit {
   }
 
   onValueChange(event: any, node: string, index: number) {
+    console.log(event);
+
     this.jsonFIleIndex = index;
     this.jsonSerive.updateNestedObject(
       this.jsonData[index],
       node,
       event.target.value
     );
+  }
+  onFocusTextArea(fileNamae: string) {
+    this.selectedFileName = fileNamae;
+  }
+  offFocusTextArea() {
+    this.selectedFileName = '';
   }
 }

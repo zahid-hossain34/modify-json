@@ -94,3 +94,7 @@ mat-form-field{
   background-color: white !important;
 } */
 
+.focused{
+  background-color: rgb(133 249 212) !important;
+  box-shadow: 0 0 0 0.2rem rgb(133 249 212 / 25%) !important;
+}

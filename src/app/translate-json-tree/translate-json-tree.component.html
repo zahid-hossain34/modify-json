@@ -2,10 +2,14 @@
   <input type="file" accept=".json" (change)="onFileUpload($event)" multiple />
 </div>
 
-<mat-chip-listbox *ngIf="fileLists.length " class="chips__container">
-  <mat-chip *ngFor="let file of fileLists ; let index = index" (removed)="removeFile(file?.name,index)">
+<mat-chip-listbox *ngIf="fileLists.length" class="chips__container">
+  <mat-chip
+  [ngClass]="selectedFileName === file.name ? 'focused' : ''"
+    *ngFor="let file of fileLists; let index = index"
+    (removed)="removeFile(file?.name, index)"
+  >
     {{ file?.name }}
-    <mat-icon matChipRemove >cancel</mat-icon>
+    <mat-icon matChipRemove>cancel</mat-icon>
   </mat-chip>
 </mat-chip-listbox>
 
@@ -19,30 +23,33 @@
   [treeControl]="nestedTreeControl"
   class="example-tree"
 >
-  <mat-tree-node *matTreeNodeDef="let node; let indexNode = index" matTreeNodeToggle>
+  <mat-tree-node
+    *matTreeNodeDef="let node; let indexNode = index"
+    matTreeNodeToggle
+  >
     <li>
       <span>{{ node.root | textFormation }} : </span>
- 
-    <mat-form-field *ngFor="let file of fileLists ; let index  = index" >
-      <mat-label >{{file.name | extentionRemover :'.json'}}</mat-label>
-      <textarea
-      class="textarea__container"
-        matInput
-        cdkTextareaAutosize
-        #autosize="cdkTextareaAutosize"
-        [ngModel]="node.value[index]"
-        cdkAutosizeMinRows="1"
-        (keyup)="onValueChange($event, node.root, index)"
-      ></textarea>
-    </mat-form-field>
+
+      <mat-form-field *ngFor="let file of fileLists; let index = index">
+        <mat-label>{{ file.name | extentionRemover : ".json" }}</mat-label>
+        <textarea
+          class="textarea__container"
+          matInput
+          cdkTextareaAutosize
+          #autosize="cdkTextareaAutosize"
+          [ngModel]="node.value[index]"
+          cdkAutosizeMinRows="1"
+          (blur)="offFocusTextArea()"
+          (focus)="onFocusTextArea(file.name)"
+          (keyup)="onValueChange($event, node.root, index)"
+        ></textarea>
+      </mat-form-field>
     </li>
   </mat-tree-node>
 
   <mat-nested-tree-node *matTreeNodeDef="let node; when: hasNestedChild">
     <li>
-      <div class="mat-tree-node" 
-      matTreeNodeToggle
-      >
+      <div class="mat-tree-node" matTreeNodeToggle>
         <button
           mat-icon-button
           matTreeNodeToggle
@@ -65,8 +72,11 @@
   </mat-nested-tree-node>
 </mat-tree>
 
-<div *ngIf="nestedDataSource.data.length && !isLoading "  class="download___button">
-  <button   mat-raised-button color="primary" (click)="onDownload()">
+<div
+  *ngIf="nestedDataSource.data.length && !isLoading"
+  class="download___button"
+>
+  <button mat-raised-button color="primary" (click)="onDownload()">
     <mat-icon>get_app</mat-icon> Download
   </button>
 </div>
