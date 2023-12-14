@@ -25,6 +25,7 @@ import {
 } from 'src/app/@application/interfaces/base.interface';
 import { UtilsService } from 'src/app/@application/services/utils.service';
 
+
 @Component({
   selector: 'app-json-tree',
   templateUrl: './json-tree.component.html',
@@ -206,7 +207,7 @@ export class JsonTreeComponent implements OnInit {
   onFocusTextArea(fileNamae: string) {
     this.selectedFileName = fileNamae;
   }
-  
+
   /**
    * 
    * @returns  set the selected file name to empty string on focus out of the text area 

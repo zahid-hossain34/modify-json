@@ -27,12 +27,12 @@
     *matTreeNodeDef="let node; let indexNode = index"
     matTreeNodeToggle
   >
-    <li>
+    <li class="list_item">
       <span>{{ node.root | textFormation }} : </span>
-
-      <mat-form-field *ngFor="let file of fileLists; let index = index">
-        <mat-label>{{ file.name | extentionRemover : ".json" }}</mat-label>
-        <textarea
+      <div  *ngFor="let file of fileLists; let index = index" class="form_filed_container" >
+        <mat-form-field class="my-form-field">
+          <mat-label>{{ file.name | extentionRemover : ".json" }}</mat-label>
+          <textarea
           class="textarea__container"
           matInput
           cdkTextareaAutosize
@@ -42,8 +42,12 @@
           (blur)="offFocusTextArea()"
           (focus)="onFocusTextArea(file.name)"
           (keyup)="onValueChange($event, node.root, index)"
-        ></textarea>
-      </mat-form-field>
+          placeholder="Enter a value"
+          ></textarea>
+          <mat-hint *ngIf="node.value[index] === '' " align="start" class="info_section">This "{{node.root}}" key is not avaiable here</mat-hint>
+        </mat-form-field>
+      </div>
+   
     </li>
   </mat-tree-node>
 
