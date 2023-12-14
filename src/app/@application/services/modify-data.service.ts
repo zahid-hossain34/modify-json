@@ -30,7 +30,7 @@ export class ModifyDataService {
       if (obj.hasOwnProperty(key) && typeof obj[key] === 'object') {
         result[key] = this.getUniqueKeys(obj[key]);
       } else {
-        result[key] = ' '; // Use an empty string as the default value
+        result[key] = ''; // Use an empty string as the default value
       }
     }
     return result;
