@@ -1,14 +1,10 @@
+
 import { Component, OnInit, Pipe } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
 import { BehaviorSubject } from 'rxjs';
 
-import {
-  FileNode,
-  IUploadFileDetails,
-  TranslateJsonTreeService,
-} from './translate-json-tree.service';
 
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -20,18 +16,20 @@ import { MatButtonModule } from '@angular/material/button';
 import { NestedTreeControl } from '@angular/cdk/tree';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { TextFormationPipe } from '../@application/pipes/textFormation.pipe';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { ExtentionRemoverPipe } from 'src/app/@application/pipes/extentionRemover.pipe';
+import { TextFormationPipe } from 'src/app/@application/pipes/textFormation.pipe';
+import { JsonServiceService } from 'src/app/@application/services/jsonService.service';
+import { ModifyDataService } from 'src/app/@application/services/modify-data.service';
+import { FileNode, IUploadFileDetails } from 'src/app/@application/interfaces/base.interface';
 
-import { ExtentionRemoverPipe } from '../@application/pipes/extentionRemover.pipe';
-import { JsonServiceService } from '../@application/services/jsonService.service';
-import { ModifyDataService } from '../@application/services/modify-data.service';
+
 
 @Component({
-  selector: 'app-translate-json-tree',
-  templateUrl: './translate-json-tree.component.html',
-  styleUrls: ['./translate-json-tree.component.css'],
+  selector: 'app-json-tree',
+  templateUrl: './json-tree.component.html',
+  styleUrls: ['./json-tree.component.css'],
   standalone: true,
   imports: [
     CommonModule,
@@ -53,7 +51,7 @@ import { ModifyDataService } from '../@application/services/modify-data.service'
   ],
   providers: [],
 })
-export class TranslateJsonTreeComponent implements OnInit {
+export class JsonTreeComponent implements OnInit {
   nestedTreeControl!: NestedTreeControl<FileNode>;
   nestedDataSource!: MatTreeNestedDataSource<FileNode>;
   fileInput: any;
@@ -66,9 +64,9 @@ export class TranslateJsonTreeComponent implements OnInit {
   selectedFileName: string = '';
 
   constructor(
-    private translateJsonTreeService: TranslateJsonTreeService,
     private jsonSerive: JsonServiceService,
-    private modifyDataService: ModifyDataService
+    private modifyDataService: ModifyDataService,
+    
   ) {}
 
   existingFileDetails = new BehaviorSubject<IUploadFileDetails>({});
@@ -106,7 +104,7 @@ export class TranslateJsonTreeComponent implements OnInit {
   @returns  the array of FileNode array objects
   */
   getDataSource() {
-    this.translateJsonTreeService.dataChange.subscribe((data: any) => {
+    this.jsonSerive.dataChange.subscribe((data: any) => {
       if (!data) return;
       this.nestedDataSource.data = data;
     });
@@ -135,11 +133,11 @@ export class TranslateJsonTreeComponent implements OnInit {
       );
       this.jsonData = finalJson;
       const finalMergedJson = this.jsonSerive.merge(finalJson);
-      const dataSourceData = this.translateJsonTreeService.buildFileTree(
+      const dataSourceData = this.jsonSerive.buildFileTree(
         finalMergedJson,
         0
       );
-      this.translateJsonTreeService.dataChange.next(dataSourceData);
+      this.jsonSerive.dataChange.next(dataSourceData);
       this.isLoading = false;
     });
 
@@ -166,12 +164,12 @@ export class TranslateJsonTreeComponent implements OnInit {
     this.jsonSerive.mergeUploadedFiles(event.target.files).then((data) => {
       this.jsonData = data;
       const finalJson = this.jsonSerive.merge(this.jsonData);
-      const dataSourceData = this.translateJsonTreeService.buildFileTree(
+      const dataSourceData = this.jsonSerive.buildFileTree(
         finalJson,
         0
       );
       this.isLoading = false;
-      this.translateJsonTreeService.dataChange.next(dataSourceData);
+      this.jsonSerive.dataChange.next(dataSourceData);
     });
   }
   /**
@@ -180,7 +178,7 @@ export class TranslateJsonTreeComponent implements OnInit {
    */
 
   getUpdateJSONData() {
-    return this.translateJsonTreeService.arrayToJSON(
+    return this.jsonSerive.arrayToJSON(
       this.nestedDataSource.data
     );
   }

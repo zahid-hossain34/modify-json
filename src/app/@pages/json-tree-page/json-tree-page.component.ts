@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { HeaderComponent } from "src/app/@components/header/header.component";
-import { TranslateJsonTreeComponent } from "src/app/translate-json-tree/translate-json-tree.component";
+import { JsonTreeComponent } from "src/app/@components/json-tree/json-tree.component";
 
 
 @Component({
@@ -10,7 +10,7 @@ import { TranslateJsonTreeComponent } from "src/app/translate-json-tree/translat
   standalone: true,
   imports: [
     HeaderComponent,
-    TranslateJsonTreeComponent
+    JsonTreeComponent
   ]
 })
 export class JsonTreePageComponent implements OnInit {
