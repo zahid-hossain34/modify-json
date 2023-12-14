@@ -5,6 +5,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppComponent } from './app.component';
 
 import { TranslatePageComponent } from './translate-page/translate-page.component';
+import { JsonTreePageComponent } from './@pages/json-tree-page/json-tree-page.component';
 
 
 @NgModule({
@@ -13,7 +14,7 @@ import { TranslatePageComponent } from './translate-page/translate-page.componen
     BrowserModule,
     BrowserAnimationsModule,
 
-    TranslatePageComponent
+    JsonTreePageComponent
   ],
   providers: [],
   bootstrap: [AppComponent],

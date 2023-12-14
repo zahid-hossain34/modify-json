@@ -15,15 +15,10 @@ import { MatToolbarModule } from '@angular/material/toolbar';
   ]
 })
 
-export class HeaderComponent implements OnInit {
-  // @Output() saveTranslateData = new EventEmitter<boolean>(false);
+export class HeaderComponent   {
   constructor() { }
 
-  ngOnInit() {
-  }
-  onSaveData(){
-    // this.saveTranslateData.emit(true);
-    
-  }
+
+
 
 }
