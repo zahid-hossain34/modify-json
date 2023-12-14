@@ -4,7 +4,7 @@
 
 <mat-chip-listbox *ngIf="fileLists.length" class="chips__container">
   <mat-chip
-  [ngClass]="selectedFileName === file.name ? 'focused' : ''"
+    [ngClass]="selectedFileName === file.name ? 'focused' : ''"
     *ngFor="let file of fileLists; let index = index"
     (removed)="removeFile(file?.name, index)"
   >

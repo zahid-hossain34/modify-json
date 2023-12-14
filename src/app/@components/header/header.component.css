@@ -1,5 +1,4 @@
-
-.container{
+.container {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -11,22 +10,21 @@
   justify-content: center;
   align-items: center;
   font-size: 1.7rem;
-  letter-spacing:  0.3rem ;
+  letter-spacing: 0.3rem;
   padding: 5px 10px;
   margin: 0;
   font-weight: 500;
-  text-shadow:  0 0 1rem rgba(7, 237, 245, 0.514)
-  
+  text-shadow: 0 0 1rem rgba(7, 237, 245, 0.514);
 }
-.text small{
+.text small {
   margin-left: 5px;
   margin-top: 5px;
   font-size: 0.9rem;
   font-weight: 300;
   letter-spacing: 0.3rem;
-  font-family:  'Roboto';
+  font-family: "Roboto";
 }
-.info{
+.info {
   width: 300px;
   height: 70px;
   background-color: #fff;
@@ -38,7 +36,7 @@
   flex-wrap: wrap;
   padding: 5px 10px;
   margin-top: 30px;
-  border:dashed 1px #ccc;
+  border: dashed 1px #ccc;
 }
 .info p {
   font-style: italic;
@@ -46,5 +44,4 @@
 
 .mat-toolbar {
   height: 100%;
-
 }
