@@ -157,6 +157,8 @@ export class JsonTreeComponent implements OnInit {
    */
 
   onFileUpload(event: any) {
+    console.log(event);
+    
     this.selectedFileName = '';
     this.fileLists = [...event.target.files];
     this.fileInput = event.target;
